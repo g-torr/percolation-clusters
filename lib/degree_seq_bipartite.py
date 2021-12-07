@@ -79,12 +79,13 @@ def bipartite_degree_seq(N_a,N_b,pmf_a,pmf_b,a_params,b_params):
     a,b = bipartite_degree_seq(N_a,N_b,'poisson','poisson',{'lam':a_mean},{'lam':N_a*a_mean/N_b})
 
     '''
-    print(a_params)
     afunc = getattr(np.random,pmf_a)
+    bfunc = getattr(np.random,pmf_b)
     aseq =afunc(**a_params,size = N_a) 
-    bseq =afunc(**b_params,size = N_b) 
+    bseq =bfunc(**b_params,size = N_b) 
+    print(afunc)
     diff =np.sum(aseq)- np.sum(bseq) 
-    if abs(diff/np.sum(aseq))>0.01:
+    if abs(diff/np.sum(aseq))>10/np.sqrt(N_a):
         raise ValueError('It is likely that statistically the sum of the two degree sequence differs')
     while diff != 0:
         n_new_samples = len(aseq) #int(abs(diff) /a_mean)
@@ -95,6 +96,8 @@ def bipartite_degree_seq(N_a,N_b,pmf_a,pmf_b,a_params,b_params):
             if abs(diff -k+ proposed )<abs(diff):
                 aseq[i] = proposed
                 diff = diff -k+ proposed
+                if diff ==0:
+                    break
     return aseq,bseq
 
 
